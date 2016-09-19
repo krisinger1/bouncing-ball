@@ -17,18 +17,27 @@ public class Vector2D {
 		return (new Vector2D(this.x-v.x,this.y-v.y));
 	}
 
+	/**
+	 * multiply a vector by a scalar
+	 * @param a
+	 * @return
+	 */
+	public Vector2D multiply(double a){
+		return new Vector2D(x*a,y*a);
+	}
+
 	public double dot(Vector2D v){
 		return this.x*v.x+this.y*v.y;
 	}
-	
+
 	public Vector2D getUnitVector(){
 		return new Vector2D(x/this.mag(),y/this.mag());
 	}
-	
+
 	public double scProjOnto(Vector2D v){
 		return dot(v)/v.mag();
 	}
-	
+
 	public Vector2D vProjOnto(Vector2D v){
 		return new Vector2D(scProjOnto(v)*v.getUnitVector().x,scProjOnto(v)*v.getUnitVector().y);
 	}
@@ -42,5 +51,7 @@ public class Vector2D {
 		else return false;
 	}
 
-
+	public String toString(){
+		return ("("+x+","+y+")");
+	}
 }

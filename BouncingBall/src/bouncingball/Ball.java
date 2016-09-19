@@ -13,15 +13,17 @@ public class Ball extends Circle{
 	private double rightX;
 	private double leftX;
 	private double elasticity;
+	private Paint fill;
 	String name;
 
 
 	public Ball(double radius, Paint fill){
 		super(radius,fill);
+		this.fill=fill;
 		velocity = new Vector2D(15,20);
 		position = new Vector2D(getLayoutX(),getLayoutY());
-		vX=25;
-		vY=20;
+//		vX=25;
+//		vY=20;
 //		topY=centerY+radius;
 //		bottomY=centerY-radius;
 //		rightX=centerX+radius;
@@ -37,12 +39,45 @@ public class Ball extends Circle{
 		return position;
 	}
 
+	public void setPosition(Vector2D pos){
+		setLayoutX(pos.x);
+		setLayoutY(pos.y);
+		position = pos;
+	}
+
 	public Vector2D getVelocity(){
 		return velocity;
 	}
 
 	public void setVelocity(Vector2D v){
 		velocity = v;
+	}
+
+	public void move(double t){
+		position = position.add(velocity.multiply(t));
+		setPosition(position);
+	}
+
+	public void move(){
+		//assumes time is 1 full step
+		position = position.add(velocity);
+		setPosition(position);
+	}
+
+	public Vector2D nextPosition(double t){
+		return position.add(velocity.multiply(t));
+	}
+
+	public Vector2D nextPosition(){
+		return position.add(velocity);
+	}
+
+	public Ball copy(){
+		Ball ball = new Ball(this.getRadius(),fill);
+		ball.setPosition(position);
+		ball.setVelocity(velocity);
+		ball.setE(elasticity);
+		return ball;
 	}
 
 //	public double getBottomY(){
