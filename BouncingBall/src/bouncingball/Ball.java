@@ -53,8 +53,8 @@ public class Ball extends Circle{
 		velocity = v;
 	}
 
-	public void move(double t){
-		position = position.add(velocity.multiply(t));
+	public void move(double t,Vector2D a){
+		position = position.add(velocity.multiply(t).add(a.multiply(t*t*.5)));
 		setPosition(position);
 	}
 
