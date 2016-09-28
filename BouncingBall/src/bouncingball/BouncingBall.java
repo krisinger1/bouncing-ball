@@ -30,6 +30,8 @@ public class BouncingBall extends Application {
     public final static double RIGHTSIDE = 800;
     public final static double LEFTSIDE = 0;
     public final static double FLOOR = 450;
+    public static Vector2D a = new Vector2D(0,.9);
+
 
 	class BallEventHandler implements EventHandler<ActionEvent>{
 
@@ -38,7 +40,6 @@ public class BouncingBall extends Application {
 		Vector2D p1;
         double vX;
         double vY;
-        Vector2D a = new Vector2D(0,.9);
         double e;
         double friction = .99;
         Ball firstBall;
@@ -77,7 +78,7 @@ public class BouncingBall extends Application {
                 //check for bounces off walls and floor
                 boolean hitRightWall = firstBall.getPosition().x>=RIGHTSIDE || firstBall.nextPosition().x>=RIGHTSIDE;
                 boolean hitLeftWall = firstBall.getPosition().x<=LEFTSIDE || firstBall.nextPosition().x<=LEFTSIDE;
-                boolean hitFloor = firstBall.getPosition().y>FLOOR || firstBall.nextPosition().y>=FLOOR;
+                boolean hitFloor = (firstBall.getPosition().y>=FLOOR || firstBall.nextPosition().y>=FLOOR);
                 if (hitRightWall || hitLeftWall || hitFloor){
                 	if (hitFloor) bounceOffFloor(firstBall,FLOOR,a);
                 	if (hitRightWall) bounceOffWall(firstBall,RIGHTSIDE);
@@ -89,6 +90,8 @@ public class BouncingBall extends Application {
 
                 }
 			}
+			System.out.println("vy out of method "+firstBall.getVY());
+			System.out.println("height "+(FLOOR-firstBall.getLayoutY()));
 
 //                vX=circle.getVX();
 //                vY=circle.getVY();
@@ -300,16 +303,17 @@ public class BouncingBall extends Application {
         ball1.relocate(100,100);
         ball2 = new Ball(10,Color.ORANGERED);
         ball2.relocate(400,100);
-        ball2.setE(.7);
-        ball2.setV(0, -5);
+        ball2.setE(.8);
+        ball2.setV(1, -5);
        // ball2.setVX(0);
         //ball2.setVY(-5);
         ball3 = new Ball(10,Color.GREENYELLOW);
         ball3.relocate(200,100);
-        ball3.setE(.6);
+        ball3.setE(.8);
+        ball3.setV(5, 0);
         ball4 = new Ball(10,Color.MEDIUMORCHID);
         ball4.relocate(300,100);
-        ball4.setE(.5);
+        ball4.setE(.8);
         Group ballGroup = new Group(ball1,ball2,ball3,ball4);
        // ballGroup.getChildren().addAll(ball1,ball2);
 
@@ -358,9 +362,9 @@ public class BouncingBall extends Application {
     	if (initialDistance<collisionDistance) collisionTime=0;
     	else collisionTime=collideTime(b1,b2,1,0);
 //    	collisionTime=1-Math.abs(collisionDistance-nextDistance)/(initialDistance); //1 minus approx post collision time
-    	b1.move(collisionTime);
+    	b1.move(collisionTime,a);
     	b1Collide=b1.getPosition();
-    	b2.move(collisionTime);
+    	b2.move(collisionTime,a);
     	b2Collide=b2.getPosition();
 
     	System.out.println("distance "+b1.getPosition().subtract(b2.getPosition()).mag()+" \ntime "+collisionTime);
@@ -372,6 +376,8 @@ public class BouncingBall extends Application {
     	Vector2D b1CollisionVproj = b1.getVelocity().vProjOnto(collisionDirection);
     	double b1CollSprojSigned = b1CollisionVproj.dot(collisionDirectionUnit);
     	Vector2D b1CollisionVorthog = b1.getVelocity().subtract(b1CollisionVproj);
+    	System.out.println("b1CollSproj "+b1CollSprojSigned);
+
 
     	Vector2D b2CollisionVproj = b2.getVelocity().vProjOnto(collisionDirection);
     	double b2CollSprojSigned = b2CollisionVproj.dot(collisionDirectionUnit);
@@ -380,20 +386,27 @@ public class BouncingBall extends Application {
     	Vector2D b1Finalproj= b1CollisionVproj;
     	Vector2D b2Finalproj= b2CollisionVproj;
 
-
+    	System.out.println("dot product "+b2Start.subtract(b1Start).dot(b2.getVelocity().subtract(b1.getVelocity())));
     	boolean movingTogether=(b2Start.subtract(b1Start).dot(b2.getVelocity().subtract(b1.getVelocity()))<=0);
     	System.out.println("movingTogether= "+movingTogether);
     	if (movingTogether){
 
     		double initialKE = b1CollSprojSigned*b1CollSprojSigned+b2CollSprojSigned*b2CollSprojSigned;
     		double velDiff = b2CollSprojSigned-b1CollSprojSigned;
-    		double lostKE = (1-b1.getE())*(velDiff)*(velDiff)+(1-b2.getE())*(velDiff)*(velDiff);
+    		double e1 = b1.getE();
+    		double e2 = b2.getE();
+    		double cr;
+    		if (e1<e2) cr=.8*e1;
+    		else cr=.8*e2;
+    		double lostKE = (1-(e1*e1))*(velDiff)*(velDiff)+(1-(e2*e2))*(velDiff)*(velDiff);
     		//double lostKE = (b2CollisionVproj.mag()*(b2.getE())-(b1CollisionVproj.mag()*(b1.getE())))*(b2CollisionVproj.mag()*(b2.getE())-(b1CollisionVproj.mag()*(b1.getE())));//b2CollisionVproj.subtract(b1CollisionVproj).mag()*(b2.getE()-b1.getE());
     		double initialMomentum = b2CollSprojSigned+b1CollSprojSigned;
     		double totalCollVelocity = b2CollSprojSigned + b1CollSprojSigned;
 
-    		double velAmag = .5*totalCollVelocity + .5*Math.sqrt(-1*totalCollVelocity*totalCollVelocity-2*lostKE+2*initialKE);
-    		double velBmag = totalCollVelocity - velAmag;
+    		//double velAmag = .5*totalCollVelocity + .5*Math.sqrt(-1*totalCollVelocity*totalCollVelocity-2*lostKE+2*initialKE);
+    		//double velBmag = totalCollVelocity - velAmag;
+    		double velAmag = (cr*(velDiff)+totalCollVelocity)/2;
+    		double velBmag = (cr*(-1*velDiff)+totalCollVelocity)/2;
 
     		Vector2D velA = collisionDirectionUnit.multiply(velAmag);
     		Vector2D velB = collisionDirectionUnit.multiply(velBmag);
@@ -431,7 +444,8 @@ public class BouncingBall extends Application {
 			b1.setPosition(b1Collide);
 			b2.setVelocity(b2Finalproj.add(b2CollisionVorthog));
 			b2.setPosition(b2Collide);
-			if ((b1Collide.y>=FLOOR ||b2Collide.y>=FLOOR)&&!(b1Collide.y>=FLOOR && b2Collide.y>=FLOOR)){
+			if ((b1Collide.y>=FLOOR-2*b2.getRadius() ||b2Collide.y>=FLOOR-2*b1.getRadius())&&!(b1Collide.y>=FLOOR-2*b2.getRadius() && b2Collide.y>=FLOOR-2*b1.getRadius())){
+				System.out.println("***swapping velocities******");
 				Vector2D temp = b1.getVelocity();
 				b1.setVelocity(b2.getVelocity());
 				b2.setVelocity(temp);
@@ -464,22 +478,41 @@ public class BouncingBall extends Application {
     }
 
     public void bounceOffFloor(Ball b,double floor,Vector2D a){
+    	System.out.println("bounceOffFloor");
+
     	double vY =b.getVY();
-    	double initialEy = .5*vY*vY + (floor-b.getPosition().y)*a.y;
-    	double timePreBounce = (Math.sqrt(2*initialEy)-vY)/a.y;
+    	System.out.println("VY = "+vY);
+    	if (vY==0) {b.setVX(.98*b.getVX());b.move(); return;}
+    	double height=floor-b.getLayoutY();
+    	System.out.println("height= "+(floor-b.getLayoutY()));
 
-    	b.move(timePreBounce);
-    	b.setVelocity(b.getVelocity().add(a.multiply(timePreBounce)));
+    	double prebounceVy = Math.sqrt(vY*vY+2*a.y*height);
+    	double timePreBounce = (prebounceVy-vY)/a.y;
+    	double bounceVy = prebounceVy*b.getE()*(-1);
+    	//double initialEy = .5*vY*vY + Math.abs((floor-b.getPosition().y))*a.y;
+    	//double timePreBounce = (Math.sqrt(2*initialEy)-vY)/a.y;
+    	System.out.println("timeprebounce = "+timePreBounce);
+    	b.move(timePreBounce,a);
+    	//b.setLayoutY(floor);
 
-    	double bounceVy = b.getVY()*b.getE()*-1;
+    	System.out.println("height= "+(floor-b.getLayoutY()));
+    	b.setVY(bounceVy);
+    	//b.setVelocity(b.getVelocity().add(a.multiply(timePreBounce)));
+
+    	//double bounceVy = b.getVY()*b.getE()*-1;
     	double postBounceEy = .5*bounceVy*bounceVy;
     	double vYfinal = bounceVy+a.y*(1-timePreBounce);
+    	System.out.println("bounceVy = "+bounceVy);
+    	System.out.println("vyfinal = "+vYfinal);
     	double yFinal= floor-(postBounceEy-.5*vYfinal*vYfinal)/a.y;
+    	
+    	if (vYfinal*bounceVy<0) { vYfinal=0; yFinal=floor;}
+    	System.out.println("yfinal = "+yFinal);
     	double xFinal = b.getPosition().x+ b.getVX()*(1-timePreBounce);
-
 
     	b.setVY(vYfinal);
      	b.setPosition(new Vector2D(xFinal,yFinal));
+    	System.out.println("vy end of method= "+b.getVY());
 
 //      if (atBottomBorder) {
 //    	if (Math.abs(vY)>0){	// if still bouncing, not rolling along bottom
@@ -511,9 +544,9 @@ public class BouncingBall extends Application {
     	System.out.println("bounceOffWall");
     	double timePreBounce = (wallLocation-b.getPosition().x)/b.getVX();
     	double bounceVx = b.getVX()*b.getE()*(-1);
-    	b.move(timePreBounce);
+    	b.move(timePreBounce,a);
     	b.setVX(bounceVx);
-    	b.move(1-timePreBounce);
+    	b.move(1-timePreBounce,a);
     }
 
     public static void main(final String[] args) {
