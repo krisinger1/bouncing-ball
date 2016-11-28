@@ -26,7 +26,7 @@ public class BouncingBall extends Application {
     public static Line ground;
     public static Ball ball1;
     public static Ball ball2;
-    public static Ball ball3,ball4;
+    public static Ball ball3,ball4,ball5,ball6;
     public final static double RIGHTSIDE = 800;
     public final static double LEFTSIDE = 0;
     public final static double FLOOR = 450;
@@ -80,213 +80,28 @@ public class BouncingBall extends Application {
                 boolean hitLeftWall = firstBall.getPosition().x<=LEFTSIDE || firstBall.nextPosition().x<=LEFTSIDE;
                 boolean hitFloor = (firstBall.getPosition().y>=FLOOR || firstBall.nextPosition().y>=FLOOR);
                 if (hitRightWall || hitLeftWall || hitFloor){
-                	if (hitFloor) bounceOffFloor(firstBall,FLOOR,a);
+                	if (hitFloor) {
+                		bounceOffFloor(firstBall,FLOOR,a);
+                		//System.out.println("vy out of method "+firstBall.getVY());  
+                		System.out.println("height out of method "+(FLOOR-firstBall.getLayoutY()));
+         		
+                	}
                 	if (hitRightWall) bounceOffWall(firstBall,RIGHTSIDE);
                 	else if (hitLeftWall) bounceOffWall(firstBall, LEFTSIDE);
                 }
                 else { //just move normally
-                	firstBall.move();
+                	if (firstBall.getPosition().y>=FLOOR && firstBall.getVelocity().y==0) a.y=0;
+                	firstBall.move(a);
+        			System.out.println("position "+firstBall.getPosition().toString());
                 	firstBall.setVelocity(firstBall.getVelocity().add(a));
+        			System.out.println("velocity "+firstBall.getVelocity().toString());
 
                 }
+    			System.out.println("vy out of method "+firstBall.getVY());
+    			System.out.println("between height "+(FLOOR-firstBall.getLayoutY()));
 			}
-			System.out.println("vy out of method "+firstBall.getVY());
-			System.out.println("height "+(FLOOR-firstBall.getLayoutY()));
-
-//                vX=circle.getVX();
-//                vY=circle.getVY();
-//                for (int i=indexc+1;i<group.size();i++){
-//                //for (int i=index+1;i<circleGroup.getChildren().size();i++){
-//				//for (Node b:circleGroup.getChildren()){
-//                	Node b=circleGroup.getChildren().get(i);
-//					int indexb=circleGroup.getChildren().indexOf(b);
-//
-//					otherBall= (Ball)b;
-//					if (!circle.equals(otherBall)){
-//						System.out.println(indexc+" vs "+indexb);
-//
-//						double distance= circle.distanceTo(otherBall);
-//						if (distance<(circle.getRadius()+otherBall.getRadius())){
-//							System.out.println(indexc+" vs "+indexb);
-//							// movingToX=(circle.getLayoutX()-otherBall.getLayoutX())*(circle.getVX()-otherBall.getVX())<=0;
-//							//boolean movingToY=(circle.getLayoutY()-otherBall.getLayoutY())*(circle.getVY()-otherBall.getVY())<=0;
-//							boolean movingTogether=((otherBall.getPosition().subtract(circle.getPosition())).dot(otherBall.getVelocity().subtract(circle.getVelocity()))<=0);
-//							//boolean movingTogether=(circle.getLayoutX()-otherBall.getLayoutX())*(circle.getVX()-otherBall.getVX())+(circle.getLayoutY()-otherBall.getLayoutY())*(circle.getVY()-otherBall.getVY())<=0;
-//								if(movingTogether){
-//							//they bounce off each other
-//								//conserve energy
-//								double totalVx=circle.getVX()+otherBall.getVX();
-//								double totalVy=circle.getVY()+otherBall.getVY();
-//								double cmVx=totalVx/2;
-//								double cmVy=totalVy/2;
-//								//double KEx = e*circle.getVX()*circle.getVX()+otherBall.getE()*otherBall.getVX()*otherBall.getVX();
-//								double KEx = (e+otherBall.getE()-1)*(circle.getVX()*circle.getVX()+otherBall.getVX()*otherBall.getVX())+2*(2-e-otherBall.getE())*circle.getVX()*otherBall.getVX();
-//								double KEy = (e+otherBall.getE()-1)*(circle.getVY()*circle.getVY()+otherBall.getVY()*otherBall.getVY())+2*(2-e-otherBall.getE())*circle.getVY()*otherBall.getVY();
-//
-//								//double KEy = e*circle.getVY()*circle.getVY()+otherBall.getVY()*otherBall.getE()*otherBall.getVY();
-//								double finalVx1= cmVx+.5*Math.sqrt(2*KEx-totalVx*totalVx);
-//								double finalVx2= totalVx-finalVx1;//cmVx-.5*Math.sqrt(2*KEx-totalVx*totalVx);
-//								double finalVy1= cmVy+.5*Math.sqrt(2*KEy-totalVy*totalVy);
-//								double finalVy2= totalVy-finalVy1;//cmVy-.5*Math.sqrt(2*KEy-totalVy*totalVy);
-//								System.out.println("X: "+totalVx+" "+circle.getVX()+" "+otherBall.getVX()+" "+finalVx1+" "+finalVx2);
-//								System.out.println("Y: "+totalVy+" "+circle.getVY()+" "+otherBall.getVY()+" "+finalVy1+" "+finalVy2);
-//
-//								if (Math.abs(finalVx1)>Math.abs(finalVx2)){
-//									if (Math.abs(circle.getVX())>Math.abs(otherBall.getVX())){
-//
-//										circle.setVX(finalVx2);
-//										otherBall.setVX(finalVx1);
-//									}
-//									else {
-//										circle.setVX(finalVx1);
-//										otherBall.setVX(finalVx2);
-//									}
-//								}
-//								else if (Math.abs(finalVx1)<=Math.abs(finalVx2)){
-//									if (Math.abs(circle.getVX())>Math.abs(otherBall.getVX())){
-//
-//										circle.setVX(finalVx1);
-//										otherBall.setVX(finalVx2);
-//									}
-//									else {
-//										circle.setVX(finalVx2);
-//										otherBall.setVX(finalVx1);
-//									}
-//								}
-//
-//								if (Math.abs(finalVy1)>Math.abs(finalVy2)){
-//									if (Math.abs(circle.getVY())>Math.abs(otherBall.getVY())){
-//
-//										circle.setVY(finalVy2);
-//										otherBall.setVY(finalVy1);
-//									}
-//									else {
-//										circle.setVY(finalVy1);
-//										otherBall.setVY(finalVy2);
-//									}
-//								}
-//								else if (Math.abs(finalVy1)<=Math.abs(finalVy2)){
-//									if (Math.abs(circle.getVY())>Math.abs(otherBall.getVY())){
-//										circle.setVY(finalVy1);
-//										otherBall.setVY(finalVy2);
-//									}
-//									else {
-//										circle.setVY(finalVy2);
-//										otherBall.setVY(finalVy1);
-//									}
-//								}
-//								if ((circle.getLayoutY()>=450 || otherBall.getLayoutY()>=450)&&!(circle.getLayoutY()>=450 && otherBall.getLayoutY()>=450)){
-//									double temp = circle.getVY();
-//									circle.setVY(-1*otherBall.getVY());
-//									otherBall.setVY(-1*temp);
-//								}
-//							}
-//						}
-//					}
-//				}
-//			}
-
-
-//			for (Node c1: circleGroup.getChildren()){
-//				firstBall = (Ball)c1;
-//				v1= firstBall.getVelocity();
-//				vY = v1.y;
-//				vX= v1.x;
-//				//vX=circle.getVX();
-//                //vY=circle.getVY();
-//                e=firstBall.getE();
-//                final Bounds bounds = canvas.getBoundsInLocal();
-//                //System.out.println(" vY "+circle.getVY());
-//                double currentY = firstBall.getLayoutY();
-//                double currentX = firstBall.getLayoutX();
-//
-//                initialE = .5*vY*vY+aY*(450-currentY);
-//
-//                System.out.println(.5*vY*vY+aY*(450-currentY)+"   "+initialE);
-//                //if (circle.getLayoutY()>=450)circle.setLayoutY(450-circle.getRadius());
-//            	//if (circle.getLayoutY()>bounds.getMaxY() - 5*circle.getRadius()) circle.setLayoutY(bounds.getMaxY() - 5*circle.getRadius());
-////            	circle.setLayoutY(circle.getLayoutY() + vY);
-////                circle.setLayoutX(circle.getLayoutX() + vX);
-//
-//
-////                final boolean atRightBorder = circle.getLayoutX() >= 800;//(bounds.getMaxX() - circle.getRadius());
-////                final boolean atLeftBorder = circle.getLayoutX() <= 0;//(bounds.getMinX() + circle.getRadius());
-////                final boolean atBottomBorder = circle.getLayoutY() >= 450;//(bounds.getMaxY() - 5*circle.getRadius());
-////                final boolean atTopBorder = circle.getLayoutY() <= 0;//(bounds.getMinY() + circle.getRadius());
-//
-//                final boolean atRightBorder = currentX+vX >= 800;//(bounds.getMaxX() - circle.getRadius());
-//                final boolean atLeftBorder = currentX+vX <= 0;//(bounds.getMinX() + circle.getRadius());
-//                final boolean atBottomBorder = currentY+vY >= 450;//(bounds.getMaxY() - 5*circle.getRadius());
-//                final boolean atTopBorder = currentY+vY <= 0;//(bounds.getMinY() + circle.getRadius());
-//
-//
-//
-//                if (atBottomBorder) {
-//                	if (Math.abs(vY)>0){	// if still bouncing, not rolling along bottom
-//                		//double timePreBounce=(450-currentY)/vY;
-//                		double timePreBounce = (Math.sqrt(2*initialE)-vY)/aY;
-//                		double timePostBounce=1-timePreBounce;
-//
-//                		double prebounceVY= Math.sqrt(2*initialE); //vY+timePreBounce*aY;
-//                		double postBounceVY = -1*e*Math.abs(prebounceVY);
-//                		//circle.setVY(-1*e*prebounceVY + (currentY+vY-450)/vY*aY);
-//                		//if (2*aY+postBounceVY>0) {
-//                		double postBounceE = .5*postBounceVY*postBounceVY;
-//                		if (initialE<.1){
-//                			firstBall.setVY(0);
-//                			firstBall.setLayoutY(450);
-//                		}
-//                		else {
-//                			firstBall.setVY(postBounceVY+aY*timePostBounce);
-//                			//circle.setVY(postBounceVY+aY*timePostBounce);
-//                			firstBall.setLayoutY(450-(postBounceE-.5*firstBall.getVY()*firstBall.getVY())/aY);
-//                			//circle.setLayoutY(450+postBounceVY*timePostBounce);
-//                		}
-//                		//vX*=friction;
-//
-//                	}
-//
-//
-//                }
-//                else {
-//                	if (Math.abs(vY)>=0) firstBall.setVY(vY+aY);
-//                	//circle.setLayoutY(currentY+vY);
-//                	firstBall.setLayoutY(450-(initialE-.5*firstBall.getVY()*firstBall.getVY())/aY);
-//                }
-//
-//                if (atRightBorder){
-//                	double bounceVX = -1*e*vX;
-//                	double timePreBounce = (800-currentX)/vX;
-//                	double timePostBounce = 1-timePreBounce;
-//                	//circle.setLayoutX(800*2-currentX-vX);
-//                	firstBall.setLayoutX(800+bounceVX*timePostBounce);
-//                	firstBall.setVX(bounceVX);
-//                }
-//                else if (atLeftBorder){
-//                	double bounceVX = Math.abs(e*vX);
-//                	double timePreBounce = (currentX-0)/vX;
-//                	double timePostBounce = 1-timePreBounce;
-//                	firstBall.setLayoutX(0+bounceVX*timePostBounce);
-//                	firstBall.setVX(bounceVX);
-//                }
-//                else {
-//                	//if (Math.abs(vY)==0) vX*=friction;
-//                	if (atBottomBorder) {
-//                		vX*=friction;
-//                		firstBall.setVX(vX);
-//                	}
-//
-//                	firstBall.setLayoutX(currentX+vX);
-//
-//                }
-//            }
 		}
     }
-
-    //public static Circle circle;
-    //public static Circle circle2;
-
-
 
     @Override
     public void start(final Stage primaryStage) {
@@ -299,22 +114,29 @@ public class BouncingBall extends Application {
         primaryStage.show();
 
         ball1 = new Ball(10,Color.BLUEVIOLET);
-        ball1.setE(.8);
+        ball1.setE(.9);
         ball1.relocate(100,100);
         ball2 = new Ball(10,Color.ORANGERED);
         ball2.relocate(400,100);
-        ball2.setE(.8);
-        ball2.setV(1, -5);
+        ball2.setE(.7);
+        ball2.setV(5, -5);
        // ball2.setVX(0);
         //ball2.setVY(-5);
         ball3 = new Ball(10,Color.GREENYELLOW);
         ball3.relocate(200,100);
         ball3.setE(.8);
-        ball3.setV(5, 0);
+        ball3.setV(10, 0);
         ball4 = new Ball(10,Color.MEDIUMORCHID);
         ball4.relocate(300,100);
-        ball4.setE(.8);
-        Group ballGroup = new Group(ball1,ball2,ball3,ball4);
+        ball4.setE(.5);
+        ball4.setV(-5, 5);
+        ball5 = new Ball(10,Color.CORNFLOWERBLUE);
+        ball5.relocate(150,100);
+        ball5.setE(.8);
+        ball6 = new Ball(10,Color.ORANGE);
+        ball6.relocate(250,100);
+        ball6.setE(.8);
+        Group ballGroup = new Group(ball1,ball2,ball3,ball4,ball5,ball6);
        // ballGroup.getChildren().addAll(ball1,ball2);
 
 //        circle = new Circle(10, Color.BLUE);
@@ -348,7 +170,10 @@ public class BouncingBall extends Application {
     }
 
     public void bounceOffBall(Ball b1, Ball b2){
-    	System.out.println("bounceOffBall");
+    	System.out.println("****************************************");
+    	System.out.println("*************bounceOffBall**************");
+    	System.out.println("****    "+b1.name+" & "+b2.name+"    *****");
+    	System.out.println("****************************************");
     	Vector2D b1Start = b1.getPosition();
     	Vector2D b2Start = b2.getPosition();
 //    	Vector2D b1Next = b1.nextPosition();
@@ -362,11 +187,14 @@ public class BouncingBall extends Application {
     	if (initialDistance<collisionDistance) collisionTime=0;
     	else collisionTime=collideTime(b1,b2,1,0);
 //    	collisionTime=1-Math.abs(collisionDistance-nextDistance)/(initialDistance); //1 minus approx post collision time
+    	System.out.println("b1Collide y= "+b1.getPosition().y+"b2Collide y="+b2.getPosition().y);
     	b1.move(collisionTime,a);
     	b1Collide=b1.getPosition();
     	b2.move(collisionTime,a);
     	b2Collide=b2.getPosition();
-
+    	if (b1Collide.y>FLOOR) b1Collide.y=FLOOR;
+    	if (b2Collide.y>FLOOR) b2Collide.y=FLOOR;
+    	System.out.println("b1Collide y= "+b1Collide.y+"b2Collide y="+b2Collide.y);
     	System.out.println("distance "+b1.getPosition().subtract(b2.getPosition()).mag()+" \ntime "+collisionTime);
     	//b1Collide = b1Start.add(b1.getVelocity().multiply(collisionTime));
     	//b2Collide = b2Start.add(b2.getVelocity().multiply(collisionTime));
@@ -478,13 +306,25 @@ public class BouncingBall extends Application {
     }
 
     public void bounceOffFloor(Ball b,double floor,Vector2D a){
-    	System.out.println("bounceOffFloor");
+    	//TODO fix for when already past floor coming in to method  -Check bounce Off Wall too
+    	System.out.println("******************************");
+    	System.out.println("          bounceOffFloor      ");
+    	System.out.println("          "+b.name+"     ");
+    	System.out.println("******************************");
 
     	double vY =b.getVY();
     	System.out.println("VY = "+vY);
-    	if (vY==0) {b.setVX(.98*b.getVX());b.move(); return;}
+    	if (vY==0) {
+    		b.setVX(.98*b.getVX());
+    		//b.setPosition(new Vector2D(b.getLayoutX(),FLOOR));
+    		b.setLayoutY(FLOOR);
+    		System.out.println("** "+b.getLayoutY());
+    		b.move(new Vector2D(0,0)); 
+    		System.out.println("** "+b.getLayoutY());
+    		return;
+    		}
     	double height=floor-b.getLayoutY();
-    	System.out.println("height= "+(floor-b.getLayoutY()));
+    	System.out.println("start height= "+(floor-b.getLayoutY()));
 
     	double prebounceVy = Math.sqrt(vY*vY+2*a.y*height);
     	double timePreBounce = (prebounceVy-vY)/a.y;
@@ -492,10 +332,9 @@ public class BouncingBall extends Application {
     	//double initialEy = .5*vY*vY + Math.abs((floor-b.getPosition().y))*a.y;
     	//double timePreBounce = (Math.sqrt(2*initialEy)-vY)/a.y;
     	System.out.println("timeprebounce = "+timePreBounce);
+    	System.out.println("1 timepostbounce = "+(1-timePreBounce));
     	b.move(timePreBounce,a);
-    	//b.setLayoutY(floor);
-
-    	System.out.println("height= "+(floor-b.getLayoutY()));
+    	System.out.println("bounce height= "+(floor-b.getLayoutY()));
     	b.setVY(bounceVy);
     	//b.setVelocity(b.getVelocity().add(a.multiply(timePreBounce)));
 
@@ -505,39 +344,17 @@ public class BouncingBall extends Application {
     	System.out.println("bounceVy = "+bounceVy);
     	System.out.println("vyfinal = "+vYfinal);
     	double yFinal= floor-(postBounceEy-.5*vYfinal*vYfinal)/a.y;
-    	
+
     	if (vYfinal*bounceVy<0) { vYfinal=0; yFinal=floor;}
     	System.out.println("yfinal = "+yFinal);
     	double xFinal = b.getPosition().x+ b.getVX()*(1-timePreBounce);
 
     	b.setVY(vYfinal);
      	b.setPosition(new Vector2D(xFinal,yFinal));
+    	System.out.println("2 timepostbounce = "+((vYfinal-bounceVy)/a.y));
+
     	System.out.println("vy end of method= "+b.getVY());
 
-//      if (atBottomBorder) {
-//    	if (Math.abs(vY)>0){	// if still bouncing, not rolling along bottom
-//    		//double timePreBounce=(450-currentY)/vY;
-//    		double timePreBounce = (Math.sqrt(2*initialE)-vY)/aY;
-//    		double timePostBounce=1-timePreBounce;
-//
-//    		double prebounceVY= Math.sqrt(2*initialE); //vY+timePreBounce*aY;
-//    		double postBounceVY = -1*e*Math.abs(prebounceVY);
-//    		//circle.setVY(-1*e*prebounceVY + (currentY+vY-450)/vY*aY);
-//    		//if (2*aY+postBounceVY>0) {
-//    		double postBounceE = .5*postBounceVY*postBounceVY;
-//    		if (initialE<.1){
-//    			firstBall.setVY(0);
-//    			firstBall.setLayoutY(450);
-//    		}
-//    		else {
-//    			firstBall.setVY(postBounceVY+aY*timePostBounce);
-//    			//circle.setVY(postBounceVY+aY*timePostBounce);
-//    			firstBall.setLayoutY(450-(postBounceE-.5*firstBall.getVY()*firstBall.getVY())/aY);
-//    			//circle.setLayoutY(450+postBounceVY*timePostBounce);
-//    		}
-//    		//vX*=friction;
-//
-//
     }
 
     public void bounceOffWall(Ball b, double wallLocation){
