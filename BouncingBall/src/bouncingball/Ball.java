@@ -16,6 +16,7 @@ public class Ball extends Circle{
 	private Paint fill;
 	String name;
 
+	//TODO override setLayoutX setLayoutY
 
 	public Ball(double radius, Paint fill){
 		super(radius,fill);
@@ -54,25 +55,32 @@ public class Ball extends Circle{
 	}
 
 	public void move(double t,Vector2D a){
-		position = position.add(velocity.multiply(t).add(a.multiply(t*t*.5)));
+		getPosition();
+		position = position.add(velocity.multiply(t)).add(a.multiply(t*t*.5));
 		setPosition(position);
 	}
 
-	public void move(){
+	public void move(Vector2D a){
+		getPosition();
 		//assumes time is 1 full step
-		position = position.add(velocity);
+		System.out.println(position.y+" "+a.y);
+		position = position.add(velocity).add(a.multiply(.5));
+		System.out.println(position.y+" "+a.y);
 		setPosition(position);
 	}
 
 	public Vector2D nextPosition(double t){
+		getPosition();
 		return position.add(velocity.multiply(t));
 	}
 
 	public Vector2D nextPosition(){
+		getPosition();
 		return position.add(velocity);
 	}
 
 	public Ball copy(){
+		getPosition();
 		Ball ball = new Ball(this.getRadius(),fill);
 		ball.setPosition(position);
 		ball.setVelocity(velocity);
